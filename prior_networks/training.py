@@ -138,7 +138,6 @@ class Trainer:
 
         # Set model in train mode
         self.model.train()
-
         for i, data in enumerate(self.trainloader, 0):
             # Get inputs
             inputs, labels = data

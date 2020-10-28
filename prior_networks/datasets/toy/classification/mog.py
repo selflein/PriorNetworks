@@ -16,7 +16,7 @@ class MixtureOfGaussiansDataset(Dataset):
         self.seed = seed
         self.OOD = OOD
 
-        self.x, self.y, self.ood_data = create_mixture_of_gaussians(size=self.size,
+        self.x, self.y, self.ood_data, self.gmm = create_mixture_of_gaussians(size=self.size,
                                                                     noise=self.noise,
                                                                     scale=self.scale,
                                                                     seed=self.seed)
@@ -36,7 +36,7 @@ class MixtureOfGaussiansDataset(Dataset):
             fig, ax = plt.subplots()
             ax.set(aspect='equal')
         if self.OOD:
-            plt.scatter(*np.hsplit(self.OOD, 2), s=s, alpha=alpha)
+            plt.scatter(*np.hsplit(self.ood_data, 2), s=s, alpha=alpha)
         else:
             colors = sns.cubehelix_palette(3, start=0.2, rot=-0.7, light=0.75)
             for i in range(3):
@@ -79,11 +79,11 @@ def create_mixture_of_gaussians(size, noise, scale=4.0, seed=100):
                              np.ones(size) * 2), axis=0)
 
     thresh = (norm.pdf(3.1)) ** 2
-    OOD_data = np.random.uniform(size=[1000000, 2], low=-20.0, high=20.0)
+    OOD_data = np.random.uniform(size=[10000000, 2], low=-20.0, high=20.0)
     OOD_probs = np.exp(gmm.score_samples(OOD_data))
-    inds = (OOD_probs < thresh) & (OOD_probs > thresh / 100000.0)
+    inds = (OOD_probs < thresh) # & (OOD_probs > thresh / 100000.0)
     OOD_data = OOD_data[inds]
     OOD_data = OOD_data[:3 * size]
 
     return np.asarray(data, dtype=np.float32), np.asarray(labels, dtype=np.long), np.asarray(
-        OOD_data, dtype=np.float32)
+        OOD_data, dtype=np.float32), gmm

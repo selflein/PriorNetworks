@@ -128,7 +128,7 @@ def differential_entropy(pmean, pscatter, pmean_belief, pscatter_belief, epsilon
 def niwpn_uncertainty(pmean, pscatter, pmean_belief, pscatter_belief, epsilon=1e-10):
     eoe = entropy_of_expected(pmean, pscatter, pmean_belief, pscatter_belief)
     exe = expected_entropy(pmean, pscatter, pmean_belief, pscatter_belief)
-mi = eoe-exe
+    mi = eoe-exe
     epkl = expected_pairwise_KL(pmean, pscatter, pmean_belief, pscatter_belief)
     de = differential_entropy(pmean, pscatter, pmean_belief, pscatter_belief)
 

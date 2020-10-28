@@ -54,10 +54,10 @@ class PriorNetMixedLoss:
                 target_concentration = loss.target_concentration
             weighted_loss = (loss(logits_list[i], labels_list[i])
                              * self.mixing_params[i])
-            total_loss.append(weighted_loss)
+            total_loss.append(weighted_loss / target_concentration)
         total_loss = torch.stack(total_loss, dim=0)
         # Normalize by target concentration, so that loss  magnitude is constant wrt lr and other losses
-        return torch.sum(total_loss) / target_concentration
+        return torch.sum(total_loss)
 
 
 class DirichletKLLoss:
@@ -109,7 +109,7 @@ class DirichletKLLoss:
         target_alphas = torch.ones_like(alphas) * self.concentration
         if labels is not None:
             target_alphas += torch.zeros_like(alphas).scatter_(1, labels[:, None],
-                                                               self.target_concentration)
+                                                               self.target_concentration.item())
 
         if self.reverse:
             loss = dirichlet_reverse_kl_divergence(alphas=alphas, target_alphas=target_alphas)

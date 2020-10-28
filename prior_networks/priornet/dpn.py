@@ -77,9 +77,8 @@ class PriorNet(nn.Module):
 
         epkl = (alphas.size()[1] - 1.0) / alphas
 
-        dentropy = torch.sum(
-            torch.lgamma(alphas) - (alphas - 1) * (torch.digamma(alphas) - torch.digamma(alpha0)),
-            dim=1) - torch.lgamma(alpha0)
+        dentropy = torch.sum(torch.lgamma(alphas) - (alphas - 1)
+                             * (torch.digamma(alphas) - torch.digamma(alpha0)), dim=1) - torch.lgamma(alpha0)
 
         conf = torch.max(probs, dim=1)
 
