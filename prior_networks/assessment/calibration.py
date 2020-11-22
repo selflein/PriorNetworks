@@ -11,6 +11,12 @@ sns.set()
 sns.set(font_scale=1.25)
 
 
+def brier_score(labels, probs):
+    min_one = probs[np.arange(len(probs)), labels] - 1
+    brier_score = (min_one ** 2).sum(1).mean(0)
+    return brier_score
+
+
 def classification_calibration(labels, probs, save_path, bins=10):
     preds = np.argmax(probs, axis=1)
     total = labels.shape[0]
@@ -53,9 +59,12 @@ def classification_calibration(labels, probs, save_path, bins=10):
     plt.xlim(0.0, 1.0)
     plt.savefig(os.path.join(save_path, 'Reliability Curve'), bbox_inches='tight')
     plt.close()
+
+    brier = brier_score(labels, probs)
     with open(os.path.join(save_path, 'results.txt'), 'a') as f:
         f.write('ECE: ' + str(np.round(ECE * 100.0, 2)) + '\n')
         f.write('MCE: ' + str(np.round(MCE * 100.0, 2)) + '\n')
+        f.write('Brier score: ' + str(np.round(brier, 2)) + '\n')
 
 # def regression_calibration_curve(targets, preds, intervals, save_path):
 #     diff = np.squeeze(abs(targets - preds))[:, np.newaxis]

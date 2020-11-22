@@ -104,22 +104,9 @@ def main():
     ood_labels, ood_probs, ood_logits = ood_labels.numpy(), F.softmax(ood_logits,
                                                                       dim=1).numpy(), ood_logits.numpy()
 
-    # Save model outputs
-    np.savetxt(os.path.join(args.output_path, 'id_labels.txt'), id_labels)
-    np.savetxt(os.path.join(args.output_path, 'id_probs.txt'), id_probs)
-    np.savetxt(os.path.join(args.output_path, 'id_logits.txt'), id_logits)
-
-    np.savetxt(os.path.join(args.output_path, 'ood_labels.txt'), ood_labels)
-    np.savetxt(os.path.join(args.output_path, 'ood_probs.txt'), ood_probs)
-    np.savetxt(os.path.join(args.output_path, 'ood_logits.txt'), ood_logits)
-
     # Get dictionary of uncertainties.
     id_uncertainties = dirichlet_prior_network_uncertainty(id_logits)
     ood_uncertainties = dirichlet_prior_network_uncertainty(ood_logits)
-    # Save uncertainties
-    for key in id_uncertainties.keys():
-        np.savetxt(os.path.join(args.output_path, key + '_id.txt'), id_uncertainties[key])
-        np.savetxt(os.path.join(args.output_path, key + '_ood.txt'), ood_uncertainties[key])
 
     # Compute Labels
     in_domain = np.zeros_like(id_labels)
