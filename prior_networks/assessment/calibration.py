@@ -12,12 +12,13 @@ sns.set(font_scale=1.25)
 
 
 def brier_score(labels, probs):
-    min_one = probs[np.arange(len(probs)), labels] - 1
-    brier_score = np.sqrt((min_one ** 2).sum(1)).mean(0)
-    return brier_score
+    probs[np.arange(len(probs)), labels] -= 1
+    return np.sqrt((probs ** 2).sum(1)).mean(0)
 
 
 def classification_calibration(labels, probs, save_path, bins=10, tag=""):
+    brier = brier_score(labels, probs.copy())
+
     preds = np.argmax(probs, axis=1)
     total = labels.shape[0]
     probs = np.max(probs, axis=1)
@@ -60,11 +61,10 @@ def classification_calibration(labels, probs, save_path, bins=10, tag=""):
     plt.savefig(os.path.join(save_path, tag + 'Calibration Curve'), bbox_inches='tight')
     plt.close()
 
-    brier = brier_score(labels, probs)
-    with open(os.path.join(save_path, tag + 'calibration_errors.txt'), 'a') as f:
-        f.write('ECE: ' + str(np.round(ECE * 100.0, 2)) + '\n')
-        f.write('MCE: ' + str(np.round(MCE * 100.0, 2)) + '\n')
-        f.write('Brier score: ' + str(np.round(brier * 100., 2)) + '\n')
+    with open(os.path.join(save_path, 'results.txt'), 'a') as f:
+        f.write(f'ECE {tag}: ' + str(np.round(ECE * 100.0, 2)) + '\n')
+        f.write(f'MCE {tag}: ' + str(np.round(MCE * 100.0, 2)) + '\n')
+        f.write(f'Brier score {tag}: ' + str(np.round(brier * 100., 2)) + '\n')
 
 # def regression_calibration_curve(targets, preds, intervals, save_path):
 #     diff = np.squeeze(abs(targets - preds))[:, np.newaxis]
