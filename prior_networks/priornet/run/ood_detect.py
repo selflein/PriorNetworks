@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import context
 import argparse
 import os
 import sys
@@ -118,8 +119,8 @@ def main():
                     out_uncertainties=ood_uncertainties,
                     save_path=args.output_path)
 
-    classification_calibration(ood_labels, ood_probs, args.ouput_path, tag="ood")
-    classification_calibration(id_labels, id_probs, args.ouput_path, tag="id")
+    classification_calibration(ood_labels, ood_probs, args.output_path, tag="ood")
+    classification_calibration(id_labels, id_probs, args.output_path, tag="id")
 
 
 if __name__ == '__main__':
