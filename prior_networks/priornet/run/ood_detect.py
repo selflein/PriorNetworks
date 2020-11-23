@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 
-import context
 import argparse
 import os
 import sys
@@ -12,6 +11,7 @@ import torch
 import torch.nn.functional as F
 
 from prior_networks.assessment.ood_detection import eval_ood_detect
+from prior_networks.assessment.calibration import classification_calibration
 from prior_networks.evaluation import eval_logits_on_dataset
 from prior_networks.datasets.image import construct_transforms
 from prior_networks.priornet.dpn import dirichlet_prior_network_uncertainty
@@ -117,6 +117,9 @@ def main():
                     in_uncertainties=id_uncertainties,
                     out_uncertainties=ood_uncertainties,
                     save_path=args.output_path)
+
+    classification_calibration(ood_labels, ood_probs, args.ouput_path, tag="ood")
+    classification_calibration(id_labels, id_probs, args.ouput_path, tag="id")
 
 
 if __name__ == '__main__':
