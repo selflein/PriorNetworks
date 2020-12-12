@@ -6,7 +6,7 @@ matplotlib.use('agg')
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import roc_auc_score, roc_curve
-from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import precision_recall_curve, average_precision_score
 from sklearn.metrics import auc
 import seaborn as sns
 
@@ -45,8 +45,11 @@ def ood_detect(domain_labels, in_measure, out_measure, measure_name, save_path, 
     if mode == 'PR':
         precision, recall, thresholds = precision_recall_curve(domain_labels, scores)
         aupr = auc(recall, precision)
-        with open(os.path.join(save_path, 'results.txt'), 'a') as f:
-            f.write('AUPR using ' + measure_name + ": " + str(np.round(aupr * 100.0, 1)) + '\n')
+
+        apr = average_precision_score(domain_labels, scores)
+        with open(os.path.join(os.path.dirname(save_path), 'results.txt'), 'a') as f:
+            f.write('AUPR using ' + measure_name + ": " + str(np.round(aupr * 100.0, 2)) + '\n')
+            f.write('APR using ' + measure_name + ": " + str(np.round(apr * 100.0, 2)) + '\n')
         np.savetxt(os.path.join(save_path, measure_name + '_recall.txt'), recall)
         np.savetxt(os.path.join(save_path, measure_name + '_precision.txt'), precision)
 
@@ -61,8 +64,8 @@ def ood_detect(domain_labels, in_measure, out_measure, measure_name, save_path, 
     elif mode == 'ROC':
         fpr, tpr, thresholds = roc_curve(domain_labels, scores)
         roc_auc = roc_auc_score(domain_labels, scores)
-        with open(os.path.join(save_path, 'results.txt'), 'a') as f:
-            f.write('AUROC using ' + measure_name + ": " + str(np.round(roc_auc * 100.0, 1)) + '\n')
+        with open(os.path.join(os.path.dirname(save_path), 'results.txt'), 'a') as f:
+            f.write('AUROC using ' + measure_name + ": " + str(np.round(roc_auc * 100.0, 2)) + '\n')
         np.savetxt(os.path.join(save_path, measure_name + '_trp.txt'), tpr)
         np.savetxt(os.path.join(save_path, measure_name + '_frp.txt'), fpr)
 

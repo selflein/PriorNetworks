@@ -2,6 +2,8 @@ LOG.txt
 .vscode
 .idea
 checkpoints
+out
+_cache_datalsuntestlmdb
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

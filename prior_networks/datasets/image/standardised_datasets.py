@@ -5,12 +5,16 @@ usable for uncertainty (e.g. out-of-domain vs. in-domain) experimentation.
 #import context
 import torchvision
 import sys
+import torch
 from torchvision.datasets import DatasetFolder
 import os
+import numpy as np
 from torchvision import transforms
 from PIL import Image
 from torchvision.datasets.folder import *
 import torchvision.datasets as datasets
+
+from uncertainty_eval.datasets.image.datasets import UniformNoiseDataset, GaussianNoiseDataset
 
 split_options = ['train', 'val', 'test']
 
@@ -21,7 +25,8 @@ def construct_transforms(n_in: int,
                          std: tuple = (1.0, 1.0, 1.0),
                          augment: bool = False,
                          rotation: bool = False,
-                         jitter: float = 0.0):
+                         jitter: float = 0.0,
+                         unscaled=False):
     """
 
     :param n_in:
@@ -71,10 +76,24 @@ def construct_transforms(n_in: int,
         transf_list.extend([transforms.Resize(n_in, Image.BICUBIC),
                             transforms.CenterCrop(n_in)])
 
-    transf_list.extend([transforms.ToTensor(),
-                        transforms.Normalize(mean, std)])
+    if unscaled:
+        transf_list.append(transforms.Lambda(lambda x: torch.from_numpy(np.array(x)).float().permute(2, 0, 1)))
+    else:
+        transf_list.extend([transforms.ToTensor(),
+                            transforms.Normalize(mean, std)])
 
     return transforms.Compose(transf_list)
+
+
+class Noise(UniformNoiseDataset):
+    def __init__(self, root, transform, target_transform, download, split):
+        super().__init__((32, 32, 3), 10_000, low=0., high=255., transform=transform)
+
+
+class GaussianNoise(GaussianNoiseDataset):
+    def __init__(self, root, transform, target_transform, download, split):
+        # Use CIFAR10 mean and std
+        super().__init__((32, 32), 10_000, mean=(0.4914, 0.4823, 0.4465), std=(0.247, 0.243, 0.261), transform=transform)
 
 
 class MNIST(torchvision.datasets.MNIST):
