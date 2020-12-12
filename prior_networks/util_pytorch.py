@@ -27,7 +27,9 @@ DATASET_DICT = {'MNIST': image.MNIST,
                 'TIM-OOD-S2': image.TinyImageNetConverseS2,
                 'TIM-OOD-S3': image.TinyImageNetConverseS3,
                 'TIM-OOD-S4': image.TinyImageNetConverseS4,
-                'ImageNet': image.ImageNet}
+                'ImageNet': image.ImageNet,
+                'Noise': image.Noise,
+                'GaussianNoise': image.GaussianNoise}
 
 
 def categorical_entropy(probs, axis=1, keepdims=False):
